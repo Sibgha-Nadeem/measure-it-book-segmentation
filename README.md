@@ -14,7 +14,7 @@ Run in cmd from the project folder:
 
 Download `best.pt` from the release below and put it in `models/`.
 
-- Weights: [GitHub release link]
+- Weights: (https://github.com/Sibgha-Nadeem/measure-it-book-segmentation/releases/tag/v1.0)
 - SHA-256: `1e353efcea9cc0785b50441c707888d0c23dbe46dac0ec1bf3174eb50e5779d5`
 
 Check the hash on Windows with `certutil -hashfile models\best.pt SHA256`.
