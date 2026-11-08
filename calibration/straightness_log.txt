@@ -1,0 +1,3 @@
+Images: 36, improved after undistortion: 36
+Mean line-fit RMS (px): raw 0.671, undistorted 0.446
+Mean worst deviation (px): raw 1.919, undistorted 1.471
