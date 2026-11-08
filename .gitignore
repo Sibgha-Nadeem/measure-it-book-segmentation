@@ -1,6 +1,7 @@
 .venv/
-__pycache__/dataset/raw/
+__pycache__/
+dataset/raw/
 dataset/extra/
 dataset/images/
 dataset/kaggle_upload.zip
-models/best.pt 
+models/best.pt
