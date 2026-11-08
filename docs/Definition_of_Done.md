@@ -6,61 +6,72 @@ The project is complete when each requirement below is implemented, tested and d
 - [x] At least 20 checkerboard images captured. (36 used: `calibration/images/`, commit link to be added)
 - [x] Camera matrix and distortion coefficients saved. (`calibration/camera_params.npz`, commit link to be added)
 - [x] Reprojection error calculated and reported. (0.968 px over 36 images: `calibration/calibration_log.txt`, table in `docs/Objectives.md`)
-- [x] Undistortion demonstrated on sample images. (`calibration/undistort_demo.py`, `calibration/undistort_demo.jpg`; visually inspected by project author)
-- [x] Numerical straightness comparison completed. (36/36 images improved; mean line-fit RMS: 0.671 px raw, 0.446 px undistorted; `calibration/straightness_check.py`, `calibration/straightness_log.txt`)
+- [x] Undistortion demonstrated on sample images. (`calibration/undistort_demo.py`, `calibration/undistort_demo.jpg`; visually inspected by project author, change was subtle)
+- [x] Numerical straightness comparison completed. (36/36 improved; mean line-fit RMS 0.671 px raw, 0.446 px undistorted; `calibration/straightness_check.py`, `calibration/straightness_log.txt`)
 
-Note: The straightness test uses the same 36 images used for calibration, so it is not an independent validation. The checkerboard print had ink streaks and was not mounted on a rigid backing.
+Note: the straightness test uses the calibration images, so it is not an independent validation. The checkerboard print had ink streaks and was not on a rigid backing.
 
 ## 2. Dataset
-- [ ] At least 70 book images captured (target: 100).
-- [ ] Images undistorted.
-- [ ] Segmentation masks created and checked.
+- [x] At least 70 book images captured (target: 100). (100 kept from 105 taken, `dataset/splits/name_map.csv`)
+- [x] Images undistorted. (`dataset/prepare_images.py`, using `calibration/camera_params.npz`)
+- [x] Segmentation masks created and checked. (100 masks from `dataset/annotate.py`; the 8 smallest masks were viewed and no problems were found. Other masks were not all inspected individually.)
 - [x] Fixed 70/20/10 split documented and committed before training. (`dataset/splits/split.txt`, commit link to be added)
-- [ ] Test images kept separate from training and validation.
+- [x] Test images kept separate from training and validation. (`book_091-100` were first loaded by `models/evaluate.py`, run once; `models/train.py` never loaded them)
 
 ## 3. Segmentation model
-- [ ] A segmentation model trained with PyTorch. (planned: U-Net; reason to be documented)
-- [ ] Model weights saved, with SHA-256 hash in the README.
-- [ ] IoU reported.
-- [ ] mAP@0.5 reported.
-- [ ] mAP@0.5:0.95 reported.
-- [ ] Precision and recall reported.
+- [x] A segmentation model trained with PyTorch. (U-Net, ResNet34 encoder, `models/train.py`; reason in `docs/Objectives.md`)
+- [x] Model weights saved, with SHA-256 hash in the README. (`models/best.pt`, hash `1e353efc...e5779d5`, release link in the README)
+- [x] IoU reported. (0.9434 on the 10 test images, `models/test_metrics.json`)
+- [x] mAP@0.5 reported. (1.0, same file, trivially high for one book per image, see Objectives)
+- [x] mAP@0.5:0.95 reported. (0.9233)
+- [x] Precision and recall reported. (1.0 and 1.0 at IoU 0.5)
 
 ## 4. Measurement pipeline
-- [ ] A single command runs the image-to-measurement pipeline.
-- [ ] Input image is undistorted.
-- [ ] Book segmentation is performed.
-- [ ] Known-size reference object is detected.
-- [ ] Width and height are output in millimetres.
-- [ ] Output includes an overlay and confidence information.
-- [ ] Missing book or reference detections are handled safely.
-- [ ] Low-confidence measurements are refused.
+- [x] A single command runs the image-to-measurement pipeline. (`python inference/measure.py <image>`)
+- [x] Input image is undistorted. (`cv2.undistort` in `main`, skipped only with `--no-undistort`)
+- [x] Book segmentation is performed. (U-Net, largest connected component)
+- [x] Known-size reference object is detected. (checkerboard, `findChessboardCornersSB`, 9 x 7)
+- [x] Width and height are output in millimetres. (homography from the board plane, e.g. `book_091`: 128.76 x 200.57 mm)
+- [x] Output includes an overlay and confidence information. (`inference/outputs/<name>_overlay.jpg`, confidence printed)
+- [x] Book not found handled: `python inference/measure.py calibration/images/IMG_20261108_175201.jpg` (checkerboard, no book) prints "BOOK NOT FOUND: no measurement reported."
+- [ ] Reference not found handled: message exists in `inference/measure.py` but was not run on a failing image.
+- [ ] Low-confidence measurements are refused. (code refuses below 0.9, a placeholder threshold; all test images scored about 0.99, so it never triggered and was not evaluated)
 
 ## 5. Accuracy testing
-- [ ] At least 10 instances tested.
-- [ ] Predictions compared with hand measurements (ruler or calliper).
-- [ ] Per-instance table included, with raw outputs saved.
-- [ ] Mean absolute error, mean percentage error, median and worst case calculated.
+- [x] At least 10 instances tested. (10 raw photos, `book_091-100`)
+- [x] Predictions compared with hand measurements (ruler or calliper). (flexible tape, three repeated readings; the 10 instances are photos of the same book, so one true size is used. Resolution roughly 1 to 2 mm.)
+- [x] Per-instance table included, with raw outputs saved. (table in `docs/Objectives.md`, `measurement/accuracy_log.txt`, `measurement/accuracy_results.csv`)
+- [x] Mean absolute error, mean percentage error, median and worst case calculated. (undistorted: MAE 5.91 mm, mean % error 3.58, median 4.17 mm, worst 16.09 mm)
 
 ## 6. Additional experiments
-- [ ] Raw versus undistorted measurements compared, with an explanation using my own numbers.
-- [ ] MO-1 and MO-2 targets evaluated: met, or missed with the reason written down.
-- [ ] At least one failure condition tested, and why I chose it.
-- [ ] Confidence-based refusal demonstrated, with the threshold and the number of refused images.
+- [x] Raw versus undistorted measurements compared, with an explanation using my own numbers. (MAE 9.58 raw vs 5.91 undistorted; 15 of 20 errors improved; caveat about the model being trained on undistorted images, see Objectives)
+- [x] MO-1 and MO-2 targets evaluated. (MO-1 MISSED: MAE 5.91 mm vs 2.0 mm target, worst case 16.09 mm vs 4.0 mm, cause unknown. MO-2 MET: median 1.80 s vs 5 s, `measurement/timing_log.txt`)
+- [ ] At least one failure condition tested, and why I chose it. (NOT REACHED)
+- [ ] Confidence-based refusal demonstrated, with the threshold and the number of refused images. (NOT REACHED: see section 4)
 
 ## 7. Documentation and submission
-- [ ] README: setup, how to run each stage, hardware, dataset summary (object, image count, split, labelling tool).
-- [ ] Plan (with decision record), Objectives and Definition of Done are in `docs/`.
-- [ ] Random seeds, library versions and training config pinned.
-- [ ] Results and limitations documented honestly.
-- [ ] Everything I did not finish is listed here, with the reason: [fill in at the end]
-- [ ] Public GitHub repository with incremental commits on `dev-test01`, and a pull request into `main`.
-- [ ] Loom demonstration (5 minutes maximum) recorded.
-- [ ] Four assessment questions (K1 to K4) answered in the demonstration.
+- [ ] README: setup, how to run each stage, hardware, dataset summary. (pending: tick when committed)
+- [x] Plan (with decision record), Objectives and Definition of Done are in `docs/`. (`docs/Plan.md`, `docs/Objectives.md`, this file)
+- [ ] Random seeds, library versions and training config pinned. (seed 42, config and Kaggle versions are in `docs/Objectives.md` and `models/train.py`; tick after `requirements.txt` includes torch and segmentation-models-pytorch)
+- [x] Results and limitations documented honestly. (`docs/Objectives.md`, Limitations section)
+- [x] Everything I did not finish is listed here, with the reason. (below)
+- [ ] Public GitHub repository with incremental commits on `dev-test01`, and a pull request into `main`. (pending: PR link)
+- [ ] Loom demonstration (5 minutes maximum) recorded. (pending)
+- [ ] Four assessment questions (K1 to K4) answered in the demonstration. (pending)
 
-**Current physical measurements (book):**
-- Height: 7.8 inches = 198.12 mm (three repeated measurements gave the same reading).
-- Width: 5.1 inches = 129.54 mm (three repeated measurements gave the same reading).
-- Thickness: 1 inch = 25.40 mm (three repeated measurements gave the same reading).
+## Not reached or partly done, and why
 
-**Checkerboard:** 10 × 8 squares, 9 × 7 internal corners, previously reported dimensions 200 × 160 mm, nominal square pitch 20 × 20 mm. Actual physical pitch still needs to be verified before final metric measurement.
+- **Item 8, failure condition (tilt, distance, lighting or frame edge): not done.** Dataset capture and masking took most of the 8 hours.
+- **Item 9, refusal: partly done.** The code refuses below a confidence of 0.9 (a placeholder), but it was never triggered, the threshold was not tuned, and the number of refused images was not measured.
+- **Missing-book and missing-reference handling: written, not tested** on a failing image.
+- **MO-1 missed.** The height bias of about +6.5 mm was not investigated.
+- **Checkerboard pitch not measured** (20 mm used, unverified).
+- **Ground truth** has a resolution of roughly 1 to 2 mm, set by a flexible tape read in inches.
+- **Accuracy numbers need the raw photos**, which are not in the repository.
+
+## Physical measurements used as ground truth
+
+- Book height: 7.8 inches = 198.12 mm (three repeated readings gave the same value).
+- Book width: 5.1 inches = 129.54 mm (three repeated readings gave the same value).
+- Book thickness: 1 inch = 25.40 mm (three repeated readings gave the same value).
+- Checkerboard: 10 x 8 squares, 9 x 7 inner corners, design size 200 x 160 mm, nominal pitch 20 mm.
