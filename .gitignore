@@ -5,3 +5,4 @@ dataset/extra/
 dataset/images/
 dataset/kaggle_upload.zip
 models/best.pt
+inference/outputs/ 

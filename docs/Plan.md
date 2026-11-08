@@ -51,3 +51,13 @@ The project prioritises requirements 1–4 before advanced experiments. Any unfi
 
 ## Current status
 Planning and equipment preparation completed. Implementation has not yet started.
+
+## Decision record
+
+**Approach taken:** a U-Net (ResNet34 encoder, PyTorch) trained on my own 70 training images to find the book cover, then a homography from the checkerboard to millimetres. The checkerboard lies beside the book on two stacked books of the same thickness, so it is level with the cover. This is what makes the homography valid for the cover.
+
+**Approach rejected:** a single pixels-per-mm scale from the reference. It is only right if the camera is exactly square-on and the reference is at the same height as the object. Neither is guaranteed with hand-held photos.
+
+**What rejecting it cost:** more code (corner detection and a homography), a strict capture setup (board and cover must be coplanar), and a pipeline that fails if the board is not found. The result was still not accurate enough: MO-1 was missed (MAE 5.91 mm against a 2.0 mm target) and the cause of the height bias was not investigated.
+
+**What changed from the plan:** items 8 (failure condition) and 9 (refusal threshold) were not reached, because dataset capture and masking took most of the 8 hours.
