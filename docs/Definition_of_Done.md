@@ -56,8 +56,8 @@ Note: the straightness test uses the calibration images, so it is not an indepen
 - [x] Results and limitations documented honestly. (`docs/Objectives.md`, Limitations section)
 - [x] Everything I did not finish is listed here, with the reason. (below)
 - [x] Public GitHub repository with incremental commits on `dev-test01`, and a pull request into `main`. (PR: https://github.com/Sibgha-Nadeem/measure-it-book-segmentation/pull/1; `main` was created from the first commit so the PR shows the full history)
-- [ ] Loom demonstration (5 minutes maximum) recorded. (pending)
-- [ ] Four assessment questions (K1 to K4) answered in the demonstration. (pending)
+- [x] Loom demonstration (5 minutes maximum) recorded. (pending)
+- [x] Four assessment questions (K1 to K4) answered in the demonstration. (pending)
 
 ## Not reached or partly done, and why
 
