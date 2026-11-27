@@ -1,0 +1,10 @@
+width_mm=128.76 height_mm=200.57 confidence=0.9895
+undistorted=False seconds=1.20
+width_mm=128.76 height_mm=200.57 confidence=0.9895
+undistorted=False seconds=1.80
+width_mm=128.76 height_mm=200.57 confidence=0.9895
+undistorted=False seconds=2.40
+width_mm=128.76 height_mm=200.57 confidence=0.9895
+undistorted=False seconds=2.49
+width_mm=128.76 height_mm=200.57 confidence=0.9895
+undistorted=False seconds=1.26
